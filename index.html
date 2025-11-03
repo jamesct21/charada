@@ -1,0 +1,761 @@
+index.php - Juego Adivina la Palabra (completo)
+<?php
+// index.php - Adivina la Palabra (versión completa, palabras embebidas por categoría)
+// - Contrarreloj 60s, modo charadas, gestos táctiles y con mouse.
+// - Este archivo contiene las listas de palabras por categoría (en español).
+
+session_start();
+header('Content-Type: text/html; charset=utf-8');
+
+$ADMIN_PASSWORD = 'admin123'; // cambia si deseas
+$ROUND_SECONDS = 60; // 1 minuto total
+
+$CATEGORIES = ['Aleatorio','Frutas','Comidas','Deportes','Animes','Animales','Celebridades','Paises'];
+
+// Lista de palabras por categoría (ejemplos en español)
+$words = [
+    // Frutas (lista extensa)
+    ['category'=>'Frutas','word'=>'Manzana'],
+    ['category'=>'Frutas','word'=>'Plátano'],
+    ['category'=>'Frutas','word'=>'Naranja'],
+    ['category'=>'Frutas','word'=>'Fresa'],
+    ['category'=>'Frutas','word'=>'Sandía'],
+    ['category'=>'Frutas','word'=>'Melón'],
+    ['category'=>'Frutas','word'=>'Pera'],
+    ['category'=>'Frutas','word'=>'Uva'],
+    ['category'=>'Frutas','word'=>'Piña'],
+    ['category'=>'Frutas','word'=>'Papaya'],
+    ['category'=>'Frutas','word'=>'Mango'],
+    ['category'=>'Frutas','word'=>'Cereza'],
+    ['category'=>'Frutas','word'=>'Durazno'],
+    ['category'=>'Frutas','word'=>'Mandarina'],
+    ['category'=>'Frutas','word'=>'Kiwi'],
+    ['category'=>'Frutas','word'=>'Guayaba'],
+    ['category'=>'Frutas','word'=>'Lima'],
+    ['category'=>'Frutas','word'=>'Limón'],
+    ['category'=>'Frutas','word'=>'Granada'],
+    ['category'=>'Frutas','word'=>'Melocotón'],
+    ['category'=>'Frutas','word'=>'Frambuesa'],
+    ['category'=>'Frutas','word'=>'Arándano'],
+    ['category'=>'Frutas','word'=>'Higo'],
+    ['category'=>'Frutas','word'=>'Coco'],
+    ['category'=>'Frutas','word'=>'Chirimoya'],
+    ['category'=>'Frutas','word'=>'Pitahaya'],
+    ['category'=>'Frutas','word'=>'Aguacate'],
+    ['category'=>'Frutas','word'=>'Maracuyá'],
+    ['category'=>'Frutas','word'=>'Tamarindo'],
+    ['category'=>'Frutas','word'=>'Pomelo'],
+    ['category'=>'Frutas','word'=>'Carambola'],
+    ['category'=>'Frutas','word'=>'Caqui'],
+    ['category'=>'Frutas','word'=>'Níspero'],
+    ['category'=>'Frutas','word'=>'Lúcuma'],
+    ['category'=>'Frutas','word'=>'Mora'],
+    ['category'=>'Frutas','word'=>'Grosella'],
+    ['category'=>'Frutas','word'=>'Dátil'],
+    ['category'=>'Frutas','word'=>'Arazá'],
+    ['category'=>'Frutas','word'=>'Camu camu'],
+    ['category'=>'Frutas','word'=>'Rambután'],
+    ['category'=>'Frutas','word'=>'Mangostán'],
+    ['category'=>'Frutas','word'=>'Nance'],
+    ['category'=>'Frutas','word'=>'Pomarrosa'],
+    ['category'=>'Frutas','word'=>'Zapote'],
+    ['category'=>'Frutas','word'=>'Mamey'],
+    ['category'=>'Frutas','word'=>'Lucuma'],
+    ['category'=>'Frutas','word'=>'Pera asiática'],
+    ['category'=>'Frutas','word'=>'Tuna'],
+    ['category'=>'Frutas','word'=>'Pitanga'],
+    ['category'=>'Frutas','word'=>'Kumquat'],
+    ['category'=>'Frutas','word'=>'Uva roja'],
+    ['category'=>'Frutas','word'=>'Uva blanca'],
+    ['category'=>'Frutas','word'=>'Uva negra'],
+    ['category'=>'Frutas','word'=>'Manzana Fuji'],
+    ['category'=>'Frutas','word'=>'Manzana Verde'],
+    ['category'=>'Frutas','word'=>'Plátano macho'],
+    ['category'=>'Frutas','word'=>'Plátano verde'],
+    ['category'=>'Frutas','word'=>'Plátano maduro'],
+    ['category'=>'Frutas','word'=>'Kiwi dorado'],
+    ['category'=>'Frutas','word'=>'Pomelo rosado'],
+    ['category'=>'Frutas','word'=>'Granadilla'],
+    ['category'=>'Frutas','word'=>'Pepino dulce'],
+    ['category'=>'Frutas','word'=>'Melón cantalupo'],
+    ['category'=>'Frutas','word'=>'Melón piel de sapo'],
+    ['category'=>'Frutas','word'=>'Ananá'],
+    ['category'=>'Frutas','word'=>'Maracuyá amarillo'],
+    ['category'=>'Frutas','word'=>'Durian'],
+    ['category'=>'Frutas','word'=>'Jabuticaba'],
+    ['category'=>'Frutas','word'=>'Mangaba'],
+    ['category'=>'Frutas','word'=>'Mamoncillo'],
+    ['category'=>'Frutas','word'=>'Atemoya'],
+    ['category'=>'Frutas','word'=>'Bacuri'],
+    ['category'=>'Frutas','word'=>'Caimito'],
+    ['category'=>'Frutas','word'=>'Curuba'],
+    ['category'=>'Frutas','word'=>'Soursop'],
+    ['category'=>'Frutas','word'=>'Pepino'],
+    ['category'=>'Frutas','word'=>'Frutilla'],
+    ['category'=>'Frutas','word'=>'Papaya hawaiana'],
+    ['category'=>'Frutas','word'=>'Guinda'],
+    ['category'=>'Frutas','word'=>'Cereza negra'],
+    ['category'=>'Frutas','word'=>'Pitomba'],
+    ['category'=>'Frutas','word'=>'Palta'],
+    ['category'=>'Frutas','word'=>'Aguaymanto'],
+    ['category'=>'Frutas','word'=>'Zapote negro'],
+    ['category'=>'Frutas','word'=>'Yaca'],
+
+    // Comidas (lista extensa)
+    ['category'=>'Comidas','word'=>'Pizza'],
+    ['category'=>'Comidas','word'=>'Hamburguesa'],
+    ['category'=>'Comidas','word'=>'Ceviche'],
+    ['category'=>'Comidas','word'=>'Tacos'],
+    ['category'=>'Comidas','word'=>'Lasaña'],
+    ['category'=>'Comidas','word'=>'Paella'],
+    ['category'=>'Comidas','word'=>'Sushi'],
+    ['category'=>'Comidas','word'=>'Pollo asado'],
+    ['category'=>'Comidas','word'=>'Ensalada'],
+    ['category'=>'Comidas','word'=>'Sopa'],
+    ['category'=>'Comidas','word'=>'Arroz con pollo'],
+    ['category'=>'Comidas','word'=>'Lomo saltado'],
+    ['category'=>'Comidas','word'=>'Anticuchos'],
+    ['category'=>'Comidas','word'=>'Ají de gallina'],
+    ['category'=>'Comidas','word'=>'Tallarines'],
+    ['category'=>'Comidas','word'=>'Empanada'],
+    ['category'=>'Comidas','word'=>'Arepa'],
+    ['category'=>'Comidas','word'=>'Tamales'],
+    ['category'=>'Comidas','word'=>'Pan con chicharrón'],
+    ['category'=>'Comidas','word'=>'Papa rellena'],
+    ['category'=>'Comidas','word'=>'Causa limeña'],
+    ['category'=>'Comidas','word'=>'Enchiladas'],
+    ['category'=>'Comidas','word'=>'Burrito'],
+    ['category'=>'Comidas','word'=>'Quesadilla'],
+    ['category'=>'Comidas','word'=>'Pasta'],
+    ['category'=>'Comidas','word'=>'Ravioles'],
+    ['category'=>'Comidas','word'=>'Risotto'],
+    ['category'=>'Comidas','word'=>'Gazpacho'],
+    ['category'=>'Comidas','word'=>'Tortilla española'],
+    ['category'=>'Comidas','word'=>'Pulpo a la gallega'],
+    ['category'=>'Comidas','word'=>'Trucha frita'],
+    ['category'=>'Comidas','word'=>'Pollo a la brasa'],
+    ['category'=>'Comidas','word'=>'Chupe de camarones'],
+    ['category'=>'Comidas','word'=>'Arroz chaufa'],
+    ['category'=>'Comidas','word'=>'Arroz con mariscos'],
+    ['category'=>'Comidas','word'=>'Sancocho'],
+    ['category'=>'Comidas','word'=>'Carapulcra'],
+    ['category'=>'Comidas','word'=>'Ocopa'],
+    ['category'=>'Comidas','word'=>'Papa a la huancaína'],
+    ['category'=>'Comidas','word'=>'Pescado frito'],
+    ['category'=>'Comidas','word'=>'Empanada de carne'],
+    ['category'=>'Comidas','word'=>'Pastel de choclo'],
+    ['category'=>'Comidas','word'=>'Cazuela'],
+    ['category'=>'Comidas','word'=>'Fideuá'],
+    ['category'=>'Comidas','word'=>'Tamal verde'],
+    ['category'=>'Comidas','word'=>'Pollo al curry'],
+    ['category'=>'Comidas','word'=>'Falafel'],
+    ['category'=>'Comidas','word'=>'Hummus'],
+    ['category'=>'Comidas','word'=>'Shawarma'],
+    ['category'=>'Comidas','word'=>'Kebab'],
+    ['category'=>'Comidas','word'=>'Hot dog'],
+    ['category'=>'Comidas','word'=>'Sandwich de pollo'],
+    ['category'=>'Comidas','word'=>'Pasta al pesto'],
+    ['category'=>'Comidas','word'=>'Pasta carbonara'],
+    ['category'=>'Comidas','word'=>'Bistec'],
+    ['category'=>'Comidas','word'=>'Asado'],
+    ['category'=>'Comidas','word'=>'Sushi maki'],
+    ['category'=>'Comidas','word'=>'Ramen'],
+    ['category'=>'Comidas','word'=>'Tlayuda'],
+    ['category'=>'Comidas','word'=>'Mole'],
+    ['category'=>'Comidas','word'=>'Pozole'],
+
+    // Deportes (lista extensa)
+    ['category'=>'Deportes','word'=>'Fútbol'],
+    ['category'=>'Deportes','word'=>'Tenis'],
+    ['category'=>'Deportes','word'=>'Natación'],
+    ['category'=>'Deportes','word'=>'Vóley'],
+    ['category'=>'Deportes','word'=>'Básquet'],
+    ['category'=>'Deportes','word'=>'Atletismo'],
+    ['category'=>'Deportes','word'=>'Ciclismo'],
+    ['category'=>'Deportes','word'=>'Boxeo'],
+    ['category'=>'Deportes','word'=>'Karate'],
+    ['category'=>'Deportes','word'=>'Judo'],
+    ['category'=>'Deportes','word'=>'Surf'],
+    ['category'=>'Deportes','word'=>'Escalada'],
+    ['category'=>'Deportes','word'=>'Golf'],
+    ['category'=>'Deportes','word'=>'Hockey'],
+    ['category'=>'Deportes','word'=>'Patinaje'],
+    ['category'=>'Deportes','word'=>'Snowboard'],
+    ['category'=>'Deportes','word'=>'Esquí'],
+    ['category'=>'Deportes','word'=>'Taekwondo'],
+    ['category'=>'Deportes','word'=>'Remo'],
+    ['category'=>'Deportes','word'=>'Canotaje'],
+    ['category'=>'Deportes','word'=>'Rugby'],
+    ['category'=>'Deportes','word'=>'Béisbol'],
+    ['category'=>'Deportes','word'=>'Críquet'],
+    ['category'=>'Deportes','word'=>'Arquería'],
+    ['category'=>'Deportes','word'=>'Triatlón'],
+    ['category'=>'Deportes','word'=>'Maratón'],
+    ['category'=>'Deportes','word'=>'Caminata'],
+    ['category'=>'Deportes','word'=>'Senderismo'],
+    ['category'=>'Deportes','word'=>'Motocross'],
+    ['category'=>'Deportes','word'=>'Parapente'],
+    ['category'=>'Deportes','word'=>'BMX'],
+    ['category'=>'Deportes','word'=>'Skateboard'],
+    ['category'=>'Deportes','word'=>'Patinaje artístico'],
+    ['category'=>'Deportes','word'=>'Gimnasia'],
+    ['category'=>'Deportes','word'=>'Halterofilia'],
+    ['category'=>'Deportes','word'=>'Ping pong'],
+    ['category'=>'Deportes','word'=>'Pádel'],
+    ['category'=>'Deportes','word'=>'Balonmano'],
+    ['category'=>'Deportes','word'=>'Handball'],
+    ['category'=>'Deportes','word'=>'Esgrima'],
+    ['category'=>'Deportes','word'=>'Tiro con arco'],
+    ['category'=>'Deportes','word'=>'Parkour'],
+    ['category'=>'Deportes','word'=>'Crossfit'],
+    ['category'=>'Deportes','word'=>'Yoga'],
+    ['category'=>'Deportes','word'=>'Pilates'],
+    ['category'=>'Deportes','word'=>'Golf miniatura'],
+    ['category'=>'Deportes','word'=>'Ultimate frisbee'],
+    ['category'=>'Deportes','word'=>'Squash'],
+    ['category'=>'Deportes','word'=>'Rally'],
+    ['category'=>'Deportes','word'=>'Automovilismo'],
+    ['category'=>'Deportes','word'=>'Karting'],
+    ['category'=>'Deportes','word'=>'Pesca deportiva'],
+    ['category'=>'Deportes','word'=>'Buceo'],
+    ['category'=>'Deportes','word'=>'Snorkel'],
+    ['category'=>'Deportes','word'=>'Esquí acuático'],
+
+    // Animes (lista extensa)
+    ['category'=>'Animes','word'=>'Naruto'],
+    ['category'=>'Animes','word'=>'One Piece'],
+    ['category'=>'Animes','word'=>'Dragon Ball'],
+    ['category'=>'Animes','word'=>'Bleach'],
+    ['category'=>'Animes','word'=>'Attack on Titan'],
+    ['category'=>'Animes','word'=>'Fullmetal Alchemist'],
+    ['category'=>'Animes','word'=>'Death Note'],
+    ['category'=>'Animes','word'=>'My Hero Academia'],
+    ['category'=>'Animes','word'=>'Demon Slayer'],
+    ['category'=>'Animes','word'=>'Jujutsu Kaisen'],
+    ['category'=>'Animes','word'=>'Hunter x Hunter'],
+    ['category'=>'Animes','word'=>'Tokyo Ghoul'],
+    ['category'=>'Animes','word'=>'Sword Art Online'],
+    ['category'=>'Animes','word'=>'Fairy Tail'],
+    ['category'=>'Animes','word'=>'Black Clover'],
+    ['category'=>'Animes','word'=>'Chainsaw Man'],
+    ['category'=>'Animes','word'=>'Inuyasha'],
+    ['category'=>'Animes','word'=>'Sailor Moon'],
+    ['category'=>'Animes','word'=>'Pokémon'],
+    ['category'=>'Animes','word'=>'Digimon'],
+    ['category'=>'Animes','word'=>'Yu-Gi-Oh!'],
+    ['category'=>'Animes','word'=>'Neon Genesis Evangelion'],
+    ['category'=>'Animes','word'=>'Cowboy Bebop'],
+    ['category'=>'Animes','word'=>'Samurai Champloo'],
+    ['category'=>'Animes','word'=>'Code Geass'],
+    ['category'=>'Animes','word'=>'Gintama'],
+    ['category'=>'Animes','word'=>'Re:Zero'],
+    ['category'=>'Animes','word'=>'Konosuba'],
+    ['category'=>'Animes','word'=>'Made in Abyss'],
+    ['category'=>'Animes','word'=>'Berserk'],
+    ['category'=>'Animes','word'=>'Vinland Saga'],
+    ['category'=>'Animes','word'=>'Parasyte'],
+    ['category'=>'Animes','word'=>'Erased'],
+    ['category'=>'Animes','word'=>'Mob Psycho 100'],
+    ['category'=>'Animes','word'=>'Spy x Family'],
+    ['category'=>'Animes','word'=>'Steins;Gate'],
+    ['category'=>'Animes','word'=>'The Promised Neverland'],
+    ['category'=>'Animes','word'=>'Blue Lock'],
+    ['category'=>'Animes','word'=>'Haikyuu!!'],
+    ['category'=>'Animes','word'=>'Kuroko no Basket'],
+    ['category'=>'Animes','word'=>'JoJo\'s Bizarre Adventure'],
+    ['category'=>'Animes','word'=>'Rurouni Kenshin'],
+    ['category'=>'Animes','word'=>'Toradora'],
+    ['category'=>'Animes','word'=>'Your Name'],
+    ['category'=>'Animes','word'=>'Spirited Away'],
+    ['category'=>'Animes','word'=>'Princess Mononoke'],
+    ['category'=>'Animes','word'=>'Totoro'],
+
+    // Animales (lista extensa)
+    ['category'=>'Animales','word'=>'Perro'],
+    ['category'=>'Animales','word'=>'Gato'],
+    ['category'=>'Animales','word'=>'Elefante'],
+    ['category'=>'Animales','word'=>'León'],
+    ['category'=>'Animales','word'=>'Tigre'],
+    ['category'=>'Animales','word'=>'Jirafa'],
+    ['category'=>'Animales','word'=>'Mono'],
+    ['category'=>'Animales','word'=>'Zorro'],
+    ['category'=>'Animales','word'=>'Oso'],
+    ['category'=>'Animales','word'=>'Caballo'],
+    ['category'=>'Animales','word'=>'Vaca'],
+    ['category'=>'Animales','word'=>'Cerdo'],
+    ['category'=>'Animales','word'=>'Oveja'],
+    ['category'=>'Animales','word'=>'Cabra'],
+    ['category'=>'Animales','word'=>'Conejo'],
+    ['category'=>'Animales','word'=>'Lobo'],
+    ['category'=>'Animales','word'=>'Delfín'],
+    ['category'=>'Animales','word'=>'Ballena'],
+    ['category'=>'Animales','word'=>'Tiburón'],
+    ['category'=>'Animales','word'=>'Pez'],
+    ['category'=>'Animales','word'=>'Pingüino'],
+    ['category'=>'Animales','word'=>'Águila'],
+    ['category'=>'Animales','word'=>'Búho'],
+    ['category'=>'Animales','word'=>'Loro'],
+    ['category'=>'Animales','word'=>'Pato'],
+    ['category'=>'Animales','word'=>'Gallina'],
+    ['category'=>'Animales','word'=>'Gallo'],
+    ['category'=>'Animales','word'=>'Pavo'],
+    ['category'=>'Animales','word'=>'Serpiente'],
+    ['category'=>'Animales','word'=>'Cocodrilo'],
+    ['category'=>'Animales','word'=>'Tortuga'],
+    ['category'=>'Animales','word'=>'Rana'],
+    ['category'=>'Animales','word'=>'Sapo'],
+    ['category'=>'Animales','word'=>'Ratón'],
+    ['category'=>'Animales','word'=>'Ardilla'],
+    ['category'=>'Animales','word'=>'Murciélago'],
+    ['category'=>'Animales','word'=>'Camello'],
+    ['category'=>'Animales','word'=>'Burro'],
+    ['category'=>'Animales','word'=>'Cebra'],
+    ['category'=>'Animales','word'=>'Gorila'],
+    ['category'=>'Animales','word'=>'Chimpancé'],
+    ['category'=>'Animales','word'=>'Hipopótamo'],
+    ['category'=>'Animales','word'=>'Rinoceronte'],
+    ['category'=>'Animales','word'=>'Panda'],
+    ['category'=>'Animales','word'=>'Koala'],
+    ['category'=>'Animales','word'=>'Canguro'],
+    ['category'=>'Animales','word'=>'Foca'],
+    ['category'=>'Animales','word'=>'Morsa'],
+    ['category'=>'Animales','word'=>'Narval'],
+    ['category'=>'Animales','word'=>'Alce'],
+    ['category'=>'Animales','word'=>'Bisonte'],
+    ['category'=>'Animales','word'=>'Castor'],
+    ['category'=>'Animales','word'=>'Nutria'],
+    ['category'=>'Animales','word'=>'Pelícano'],
+    ['category'=>'Animales','word'=>'Flamenco'],
+    ['category'=>'Animales','word'=>'Avestruz'],
+    ['category'=>'Animales','word'=>'Pavo real'],
+    ['category'=>'Animales','word'=>'Colibrí'],
+    ['category'=>'Animales','word'=>'Mariposa'],
+    ['category'=>'Animales','word'=>'Abeja'],
+    ['category'=>'Animales','word'=>'Escorpión'],
+    ['category'=>'Animales','word'=>'Caracol'],
+    ['category'=>'Animales','word'=>'Oruga'],
+    ['category'=>'Animales','word'=>'Camaleón'],
+    ['category'=>'Animales','word'=>'Iguana'],
+    ['category'=>'Animales','word'=>'Lagarto'],
+    ['category'=>'Animales','word'=>'Dragón de komodo'],
+    ['category'=>'Animales','word'=>'Pez payaso'],
+    ['category'=>'Animales','word'=>'Caballito de mar'],
+    ['category'=>'Animales','word'=>'Pulpo'],
+    ['category'=>'Animales','word'=>'Langosta'],
+    ['category'=>'Animales','word'=>'Cangrejo'],
+    ['category'=>'Animales','word'=>'Gusano'],
+
+    // Celebridades (lista extensa)
+    ['category'=>'Celebridades','word'=>'Shakira'],
+    ['category'=>'Celebridades','word'=>'Messi'],
+    ['category'=>'Celebridades','word'=>'Beyoncé'],
+    ['category'=>'Celebridades','word'=>'Rihanna'],
+    ['category'=>'Celebridades','word'=>'Taylor Swift'],
+    ['category'=>'Celebridades','word'=>'Bad Bunny'],
+    ['category'=>'Celebridades','word'=>'Ariana Grande'],
+    ['category'=>'Celebridades','word'=>'Selena Gomez'],
+    ['category'=>'Celebridades','word'=>'Dua Lipa'],
+    ['category'=>'Celebridades','word'=>'Justin Bieber'],
+    ['category'=>'Celebridades','word'=>'Ed Sheeran'],
+    ['category'=>'Celebridades','word'=>'Bruno Mars'],
+    ['category'=>'Celebridades','word'=>'The Weeknd'],
+    ['category'=>'Celebridades','word'=>'Drake'],
+    ['category'=>'Celebridades','word'=>'Jennifer Lopez'],
+    ['category'=>'Celebridades','word'=>'Miley Cyrus'],
+    ['category'=>'Celebridades','word'=>'Lady Gaga'],
+    ['category'=>'Celebridades','word'=>'Kim Kardashian'],
+    ['category'=>'Celebridades','word'=>'Kanye West'],
+    ['category'=>'Celebridades','word'=>'Elon Musk'],
+    ['category'=>'Celebridades','word'=>'Cristiano Ronaldo'],
+    ['category'=>'Celebridades','word'=>'Neymar'],
+    ['category'=>'Celebridades','word'=>'Maluma'],
+    ['category'=>'Celebridades','word'=>'Karol G'],
+    ['category'=>'Celebridades','word'=>'Camila Cabello'],
+    ['category'=>'Celebridades','word'=>'Billie Eilish'],
+    ['category'=>'Celebridades','word'=>'Post Malone'],
+    ['category'=>'Celebridades','word'=>'Harry Styles'],
+    ['category'=>'Celebridades','word'=>'Olivia Rodrigo'],
+    ['category'=>'Celebridades','word'=>'Zendaya'],
+    ['category'=>'Celebridades','word'=>'Tom Holland'],
+    ['category'=>'Celebridades','word'=>'Robert Downey Jr.'],
+    ['category'=>'Celebridades','word'=>'Chris Evans'],
+    ['category'=>'Celebridades','word'=>'Scarlett Johansson'],
+    ['category'=>'Celebridades','word'=>'Leonardo DiCaprio'],
+    ['category'=>'Celebridades','word'=>'Brad Pitt'],
+    ['category'=>'Celebridades','word'=>'Angelina Jolie'],
+    ['category'=>'Celebridades','word'=>'Johnny Depp'],
+    ['category'=>'Celebridades','word'=>'Keanu Reeves'],
+    ['category'=>'Celebridades','word'=>'Dwayne Johnson'],
+    ['category'=>'Celebridades','word'=>'Jason Momoa'],
+    ['category'=>'Celebridades','word'=>'Gal Gadot'],
+    ['category'=>'Celebridades','word'=>'Ryan Reynolds'],
+    ['category'=>'Celebridades','word'=>'Emma Watson'],
+    ['category'=>'Celebridades','word'=>'Tom Cruise'],
+    ['category'=>'Celebridades','word'=>'Will Smith'],
+    ['category'=>'Celebridades','word'=>'Morgan Freeman'],
+    ['category'=>'Celebridades','word'=>'Jim Carrey'],
+    ['category'=>'Celebridades','word'=>'Eminem'],
+    ['category'=>'Celebridades','word'=>'Snoop Dogg'],
+    ['category'=>'Celebridades','word'=>'Jay-Z'],
+    ['category'=>'Celebridades','word'=>'Adele'],
+    ['category'=>'Celebridades','word'=>'Katy Perry'],
+    ['category'=>'Celebridades','word'=>'Jennifer Lawrence'],
+    ['category'=>'Celebridades','word'=>'Anne Hathaway'],
+    ['category'=>'Celebridades','word'=>'Natalie Portman'],
+    ['category'=>'Celebridades','word'=>'Margot Robbie'],
+    ['category'=>'Celebridades','word'=>'Ryan Gosling'],
+    ['category'=>'Celebridades','word'=>'Hugh Jackman'],
+    ['category'=>'Celebridades','word'=>'Benedict Cumberbatch'],
+    ['category'=>'Celebridades','word'=>'Matt Damon'],
+    ['category'=>'Celebridades','word'=>'Ben Affleck'],
+    ['category'=>'Celebridades','word'=>'Chris Hemsworth'],
+    ['category'=>'Celebridades','word'=>'Samuel L. Jackson'],
+    ['category'=>'Celebridades','word'=>'Harrison Ford'],
+    ['category'=>'Celebridades','word'=>'Tom Hanks'],
+    ['category'=>'Celebridades','word'=>'Robin Williams'],
+    ['category'=>'Celebridades','word'=>'Bill Gates'],
+    ['category'=>'Celebridades','word'=>'Oprah Winfrey'],
+    ['category'=>'Celebridades','word'=>'Ellen DeGeneres'],
+    ['category'=>'Celebridades','word'=>'Shawn Mendes'],
+
+    // Paises (lista extensa)
+    ['category'=>'Paises','word'=>'Perú'],
+    ['category'=>'Paises','word'=>'México'],
+    ['category'=>'Paises','word'=>'Argentina'],
+    ['category'=>'Paises','word'=>'Chile'],
+    ['category'=>'Paises','word'=>'Colombia'],
+    ['category'=>'Paises','word'=>'Brasil'],
+    ['category'=>'Paises','word'=>'Uruguay'],
+    ['category'=>'Paises','word'=>'Paraguay'],
+    ['category'=>'Paises','word'=>'Ecuador'],
+    ['category'=>'Paises','word'=>'Bolivia'],
+    ['category'=>'Paises','word'=>'Venezuela'],
+    ['category'=>'Paises','word'=>'Panamá'],
+    ['category'=>'Paises','word'=>'Costa Rica'],
+    ['category'=>'Paises','word'=>'Cuba'],
+    ['category'=>'Paises','word'=>'República Dominicana'],
+    ['category'=>'Paises','word'=>'Puerto Rico'],
+    ['category'=>'Paises','word'=>'Estados Unidos'],
+    ['category'=>'Paises','word'=>'Canadá'],
+    ['category'=>'Paises','word'=>'España'],
+    ['category'=>'Paises','word'=>'Portugal'],
+    ['category'=>'Paises','word'=>'Francia'],
+    ['category'=>'Paises','word'=>'Italia'],
+    ['category'=>'Paises','word'=>'Alemania'],
+    ['category'=>'Paises','word'=>'Suiza'],
+    ['category'=>'Paises','word'=>'Austria'],
+    ['category'=>'Paises','word'=>'Países Bajos'],
+    ['category'=>'Paises','word'=>'Bélgica'],
+    ['category'=>'Paises','word'=>'Noruega'],
+    ['category'=>'Paises','word'=>'Suecia'],
+    ['category'=>'Paises','word'=>'Finlandia'],
+    ['category'=>'Paises','word'=>'Dinamarca'],
+    ['category'=>'Paises','word'=>'Irlanda'],
+    ['category'=>'Paises','word'=>'Reino Unido'],
+    ['category'=>'Paises','word'=>'Grecia'],
+    ['category'=>'Paises','word'=>'Turquía'],
+    ['category'=>'Paises','word'=>'Rusia'],
+    ['category'=>'Paises','word'=>'Ucrania'],
+    ['category'=>'Paises','word'=>'Polonia'],
+    ['category'=>'Paises','word'=>'Hungría'],
+    ['category'=>'Paises','word'=>'Rumania'],
+    ['category'=>'Paises','word'=>'Bulgaria'],
+    ['category'=>'Paises','word'=>'Serbia'],
+    ['category'=>'Paises','word'=>'Croacia'],
+    ['category'=>'Paises','word'=>'Eslovaquia'],
+    ['category'=>'Paises','word'=>'Eslovenia'],
+    ['category'=>'Paises','word'=>'Macedonia del Norte'],
+    ['category'=>'Paises','word'=>'Albania'],
+    ['category'=>'Paises','word'=>'Georgia'],
+    ['category'=>'Paises','word'=>'India'],
+    ['category'=>'Paises','word'=>'China'],
+    ['category'=>'Paises','word'=>'Japón'],
+    ['category'=>'Paises','word'=>'Corea del Sur'],
+    ['category'=>'Paises','word'=>'Corea del Norte'],
+    ['category'=>'Paises','word'=>'Tailandia'],
+    ['category'=>'Paises','word'=>'Vietnam'],
+    ['category'=>'Paises','word'=>'Indonesia'],
+    ['category'=>'Paises','word'=>'Malasia'],
+    ['category'=>'Paises','word'=>'Filipinas'],
+    ['category'=>'Paises','word'=>'Singapur'],
+    ['category'=>'Paises','word'=>'Pakistán'],
+    ['category'=>'Paises','word'=>'Irán'],
+    ['category'=>'Paises','word'=>'Irak'],
+    ['category'=>'Paises','word'=>'Israel'],
+    ['category'=>'Paises','word'=>'Arabia Saudita'],
+    ['category'=>'Paises','word'=>'Egipto'],
+    ['category'=>'Paises','word'=>'Marruecos'],
+    ['category'=>'Paises','word'=>'Sudáfrica'],
+    ['category'=>'Paises','word'=>'Nigeria'],
+    ['category'=>'Paises','word'=>'Kenia'],
+    ['category'=>'Paises','word'=>'Etiopía'],
+    ['category'=>'Paises','word'=>'Ghana'],
+    ['category'=>'Paises','word'=>'Argelia'],
+    ['category'=>'Paises','word'=>'Libia'],
+    ['category'=>'Paises','word'=>'Australia'],
+    ['category'=>'Paises','word'=>'Nueva Zelanda'],
+    ['category'=>'Paises','word'=>'Fiyi'],
+    ['category'=>'Paises','word'=>'Samoa'],
+    ['category'=>'Paises','word'=>'Papúa Nueva Guinea'],
+    ['category'=>'Paises','word'=>'Tonga'],
+    ['category'=>'Paises','word'=>'Vanuatu'],
+    ['category'=>'Paises','word'=>'Madagascar'],
+    ['category'=>'Paises','word'=>'Sudán'],
+    ['category'=>'Paises','word'=>'Camerún'],
+    ['category'=>'Paises','word'=>'Chad'],
+
+];
+
+// Generar la categoría Aleatorio que contiene todas las palabras
+$all = $words; // copia
+foreach ($all as $w) {
+    $words[] = ['category'=>'Aleatorio','word'=>$w['word']];
+}
+
+// Convertir a JSON para usar en JS
+$words_json = json_encode($words, JSON_UNESCAPED_UNICODE);
+$categories_json = json_encode($CATEGORIES, JSON_UNESCAPED_UNICODE);
+?>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adivina la Palabra - Completo</title>
+  <style>
+    /* Estilos mínimos responsivos */
+    :root{--bg1:#08304a;--bg2:#0f4b6b;--card:#0b2230;--accent:#34d1d9;--accent2:#2bb0ff;--muted:#9fb7c6}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#eaf6fb}
+    .wrap{max-width:920px;margin:18px auto;padding:18px}
+    .app{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:16px;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{margin:0;font-size:20px}
+    .panel{display:grid;grid-template-columns:1fr 320px;gap:14px;margin-top:14px}
+    .card{background:var(--card);padding:14px;border-radius:12px}
+    .big-word{font-size:44px;font-weight:700;letter-spacing:2px;padding:24px;border-radius:12px;min-height:120px;display:flex;align-items:center;justify-content:center;text-align:center;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))}
+    .actions{display:flex;gap:10px;align-items:center}
+    input[type=text],select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background-color:#0b2230;color:#fff}
+    .btn{background:linear-gradient(180deg,var(--accent),var(--accent2));border:none;color:#032;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    @media(max-width:900px){.panel{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="app">
+      <header>
+        <h1>🎭 Adivina la Palabra - Completo</h1>
+        <div class="timer">Tiempo: <strong id="displayTimer">01:00</strong></div>
+      </header>
+
+      <div class="panel">
+        <main class="card">
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px">
+            <label for="categorySelect" style="color:var(--muted);min-width:110px">Categoría:</label>
+            <select id="categorySelect"></select>
+            <div style="flex:1"></div>
+            <div style="color:var(--muted);font-size:13px" id="catCount"></div>
+          </div>
+
+          <div style="text-align:center">
+            <div class="big-word" id="wordBox">Pulsa <strong>Empezar Ronda</strong></div>
+            <div class="actions" style="margin-top:12px">
+              <button id="startBtn" class="btn">🎬 Empezar Ronda (1 min)</button>
+              <button id="correctBtn" class="btn ghost" disabled>✅ Acertó</button>
+              <button id="passBtn" class="btn ghost" disabled>⏭ Pasar</button>
+            </div>
+            <div id="feedback" style="height:48px;margin-top:8px"></div>
+          </div>
+        </main>
+
+        <aside class="card">
+          <div class="stats">
+            <div class="stat"><div>Palabras totales</div><div id="totalWords"><?php echo count($words); ?></div></div>
+            <div class="stat"><div>Adivinadas</div><div id="score">0</div></div>
+            <div class="stat"><div>Pasadas</div><div id="skips">0</div></div>
+            <div class="stat"><div>Actual</div><div id="currentIndex">-</div></div>
+            <div class="stat"><div>Categoría</div><div id="currentCategory">-</div></div>
+          </div>
+
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)">
+
+          <div>
+            <strong>Admin</strong>
+            <div style="margin-top:10px">
+              <?php if (!empty($_SESSION['is_admin'])): ?>
+                <form method="post">
+                  <input type="hidden" name="act" value="admin_logout">
+                  <button class="btn ghost" type="submit">Salir admin</button>
+                </form>
+
+                <div style="margin-top:8px">
+                  <form method="post">
+                    <input type="hidden" name="act" value="add_word">
+                    <input type="text" name="new_word" placeholder="Nueva palabra" required>
+                    <div style="height:8px"></div>
+                    <select name="new_category">
+                      <?php foreach ($CATEGORIES as $c): if ($c==='Aleatorio') continue; ?>
+                        <option value="<?php echo htmlspecialchars($c); ?>"><?php echo htmlspecialchars($c); ?></option>
+                      <?php endforeach; ?>
+                    </select>
+                    <div style="height:8px"></div>
+                    <button class="btn" type="submit">Añadir palabra</button>
+                  </form>
+                </div>
+
+                <div style="margin-top:10px;max-height:180px;overflow:auto">
+                  <form method="post">
+                    <input type="hidden" name="act" value="delete_word">
+                    <ul style="padding-left:14px;margin:0">
+                      <?php foreach ($words as $i => $w): ?>
+                        <li style="margin-bottom:6px;color:var(--muted)"><?php echo htmlspecialchars($w['word']); ?> <em style="color:var(--muted)">(<?php echo htmlspecialchars($w['category']); ?>)</em> <button class="btn ghost" type="submit" name="delete_idx" value="<?php echo $i; ?>">Eliminar</button></li>
+                      <?php endforeach; ?>
+                    </ul>
+                  </form>
+                </div>
+
+              <?php else: ?>
+                <form method="post">
+                  <input type="hidden" name="act" value="admin_login">
+                  <input type="password" name="admin_password" placeholder="Contraseña admin">
+                  <div style="height:8px"></div>
+                  <button class="btn" type="submit">Entrar admin</button>
+                </form>
+              <?php endif; ?>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal resumen -->
+  <div id="summaryModal" class="overlay" style="display:none">
+    <div class="modal">
+      <h3>Resumen</h3>
+      <p id="summaryText">Has adivinado <strong id="finalScore">0</strong> palabras.</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button id="restartBtn" class="btn">Jugar otra vez</button>
+        <button id="closeModal" class="btn ghost">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Datos desde PHP
+const WORDS = <?php echo $words_json; ?>; // array de objetos {word, category}
+const CATEGORIES = <?php echo $categories_json; ?>;
+
+// UI refs
+const categorySelect = document.getElementById('categorySelect');
+const catCount = document.getElementById('catCount');
+
+// poblar select de categorías
+function populateCategories(){
+  categorySelect.innerHTML = '';
+  CATEGORIES.forEach(c=>{
+    const opt = document.createElement('option'); opt.value = c; opt.textContent = c; categorySelect.appendChild(opt);
+  });
+}
+populateCategories();
+
+// Estado del juego
+let pool = []; // palabras filtradas según categoría
+let shuffled = [];
+let idx = 0;
+let score = 0;
+let skips = 0;
+let running = false;
+let timeLeft = <?php echo $ROUND_SECONDS; ?>;
+let timerInterval = null;
+
+// elementos
+const wordBox = document.getElementById('wordBox');
+const startBtn = document.getElementById('startBtn');
+const correctBtn = document.getElementById('correctBtn');
+const passBtn = document.getElementById('passBtn');
+const displayTimer = document.getElementById('displayTimer');
+const scoreEl = document.getElementById('score');
+const skipsEl = document.getElementById('skips');
+const totalWordsEl = document.getElementById('totalWords');
+const currentIndexEl = document.getElementById('currentIndex');
+const currentCategoryEl = document.getElementById('currentCategory');
+const feedback = document.getElementById('feedback');
+const summaryModal = document.getElementById('summaryModal');
+const finalScore = document.getElementById('finalScore');
+const restartBtn = document.getElementById('restartBtn');
+const closeModal = document.getElementById('closeModal');
+
+// helpers
+function countCategory(c){ return WORDS.filter(w=>w.category===c).length; }
+function updateCatCount(){ const c = categorySelect.value; if(c==='Aleatorio'){ catCount.textContent = WORDS.length + ' palabras disponibles'; } else { catCount.textContent = countCategory(c) + ' palabras en ' + c; } }
+
+// inicializar select y contador
+categorySelect.addEventListener('change', updateCatCount);
+updateCatCount();
+
+// shuffle
+function shuffleArray(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+
+function preparePool(){
+  const cat = categorySelect.value;
+  if(cat === 'Aleatorio'){
+    pool = WORDS.map(x=>({word:x.word, category:x.category}));
+  } else {
+    pool = WORDS.filter(x=>x.category===cat).map(x=>({word:x.word, category:x.category}));
+  }
+  if(pool.length===0){ alert('No hay palabras en esta categoría. Selecciona otra o añade palabras desde Admin.'); }
+}
+
+function resetGameState(){
+  preparePool();
+  shuffled = pool.slice(); shuffleArray(shuffled);
+  idx = 0; score = 0; skips = 0; running = false; timeLeft = <?php echo $ROUND_SECONDS; ?>;
+  scoreEl.textContent = score; skipsEl.textContent = skips; currentIndexEl.textContent = '-'; currentCategoryEl.textContent = categorySelect.value;
+  displayTimer.textContent = formatTime(timeLeft);
+  wordBox.textContent = 'Pulsa Empezar Ronda'; correctBtn.disabled=true; passBtn.disabled=true; feedback.innerHTML='';
+}
+
+function startRound(){
+  if(pool.length===0){ alert('No hay palabras en la categoría seleccionada.'); return; }
+  running = true; score=0; skips=0; idx=0; shuffleArray(shuffled);
+  correctBtn.disabled=false; passBtn.disabled=false; startBtn.disabled=true; startBtn.textContent='Ronda en curso...';
+  showCurrent();
+  timerInterval = setInterval(()=>{ timeLeft--; displayTimer.textContent = formatTime(timeLeft); if(timeLeft<=0) endRound(); },1000);
+}
+
+function endRound(){ running=false; clearInterval(timerInterval); startBtn.disabled=false; startBtn.textContent='🎬 Empezar Ronda (1 min)'; correctBtn.disabled=true; passBtn.disabled=true; finalScore.textContent = score; summaryModal.style.display='flex'; }
+
+function formatTime(t){ const mm=String(Math.floor(t/60)).padStart(2,'0'); const ss=String(t%60).padStart(2,'0'); return mm+':'+ss; }
+
+function showCurrent(){ if(!running) return; if(idx>=shuffled.length){ shuffled = pool.slice(); shuffleArray(shuffled); idx=0; } const w = shuffled[idx]; wordBox.textContent = w.word; currentIndexEl.textContent = (idx+1) + ' / ' + shuffled.length; currentCategoryEl.textContent = categorySelect.value; }
+
+function markCorrect(){ if(!running) return; score++; scoreEl.textContent = score; flashFeedback(true); idx++; showCurrent(); }
+function markSkip(){ if(!running) return; skips++; skipsEl.textContent = skips; flashFeedback(false); idx++; showCurrent(); }
+
+function flashFeedback(ok){ feedback.innerHTML=''; const el=document.createElement('div'); el.textContent = ok ? '✅ Acierto' : '⏭ Pasado'; el.style.padding='10px 14px'; el.style.borderRadius='10px'; el.style.background = ok ? 'rgba(90,255,200,0.08)' : 'rgba(255,90,90,0.06)'; el.style.color = ok ? '#c8fff6' : '#ffdede'; feedback.appendChild(el); setTimeout(()=>{ if(feedback.contains(el)) feedback.removeChild(el); },700); }
+
+// botones
+startBtn.addEventListener('click', ()=>{ preparePool(); resetGameState(); if(!running) startRound(); });
+correctBtn.addEventListener('click', ()=>{ markCorrect(); });
+passBtn.addEventListener('click', ()=>{ markSkip(); });
+restartBtn.addEventListener('click', ()=>{ summaryModal.style.display='none'; resetGameState(); startRound(); });
+closeModal.addEventListener('click', ()=>{ summaryModal.style.display='none'; resetGameState(); });
+
+// touch & mouse swipe on wordBox
+let touchStartX=null; let touchStartY=null; let mouseDownX=null;
+function handleSwipeDelta(dx,dy){ const absX=Math.abs(dx); const absY=Math.abs(dy); if(absX<40 || absX<absY) return; if(dx>0) markCorrect(); else markSkip(); }
+wordBox.addEventListener('touchstart',(e)=>{ const t=e.changedTouches[0]; touchStartX=t.clientX; touchStartY=t.clientY; },{passive:true});
+wordBox.addEventListener('touchend',(e)=>{ const t=e.changedTouches[0]; if(touchStartX===null) return; handleSwipeDelta(t.clientX-touchStartX,t.clientY-touchStartY); touchStartX=null; touchStartY=null; },{passive:true});
+wordBox.addEventListener('mousedown',(e)=>{ mouseDownX=e.clientX; });
+window.addEventListener('mouseup',(e)=>{ if(mouseDownX===null) return; handleSwipeDelta(e.clientX-mouseDownX,0); mouseDownX=null; });
+window.addEventListener('keydown',(e)=>{ if(!running) return; if(e.key==='ArrowRight') markCorrect(); if(e.key==='ArrowLeft') markSkip(); });
+
+// iniciar
+resetGameState();
+updateCatCount();
+
+</script>
+</body>
+</html>
